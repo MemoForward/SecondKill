@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--写sql语句-->
+<mapper namespace="com.memoforward.dao.SeckillDao">
+	<resultMap id="seckillProductMap" type="com.memoforward.domain.SeckillProduct">
+		<id column="sec_id" property="secId"/>
+		<result column="sec_number" property="number"/>
+		<result column="sec_name" property="secName"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="create_time" property="createTime"/>
+	</resultMap>
+	
+	<update id="reduceNumber">
+		update
+			seckill
+		set
+			sec_number = sec_number - 1
+		where sec_id = #{seckillId}
+		and start_time <![CDATA[<=]]> #{killTime}
+		and end_time >= #{killTime}
+		and sec_number > 0
+	</update>
+	
+	<select id="queryById" resultType="com.memoforward.domain.SeckillProduct" parameterType="Long" resultMap="seckillProductMap">
+		select * from seckill where sec_id = #{seckillId}
+	</select>
+	<select id="queryAll" resultType="com.memoforward.domain.SeckillProduct" resultMap="seckillProductMap">
+		select * from seckill order by create_time desc limit #{offset},#{limit}
+	</select>
+</mapper>

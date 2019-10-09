@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--写sql语句-->
+<mapper namespace="com.memoforward.dao.SuccessKilledDao">
+<!--	-->
+	<resultMap id="seckillProductMap" type="com.memoforward.domain.SeckillProduct">
+		<id column="p_sec_id" property="secId"/>
+		<result column="sec_number" property="number"/>
+		<result column="sec_name" property="secName"/>
+		<result column="start_time" property="startTime"/>
+		<result column="end_time" property="endTime"/>
+		<result column="p_create_time" property="createTime"/>
+	</resultMap>
+	<resultMap id="successKilledMap" type="com.memoforward.domain.SuccessKilled">
+		<id column="sec_id" property="secId"/>
+		<id column="user_phone" property="userPhone"/>
+		<result column="create_time" property="createTime"/>
+		<association property="seckillProduct" resultMap="seckillProductMap" javaType="SeckillProduct" />
+	</resultMap>
+	<insert id="insertSuccessKilled">
+<!-- 		主键冲突就报错 -->
+		insert ignore into success_killed(sec_id,user_phone,state)
+		values (#{seckillId},#{userPhone},0)
+	</insert>
+	
+	<select id="queryByIdWithSecKill" resultType="com.memoforward.domain.SuccessKilled" resultMap="successKilledMap" >
+		<!--外键级联-->
+		select
+		sk.sec_id,
+		sk.user_phone,
+		sk.state,
+		sk.create_time,
+		s.sec_id as "p_sec_id",
+		s.sec_name as "sec_name",
+		s.sec_number as "sec_number",
+		s.start_time as "start_time",
+		s.end_time as "end_time",
+		s.create_time as "p_create_time"
+		from success_killed sk
+		inner join seckill s on sk.sec_id  = s.sec_id
+		where sk.sec_id = #{seckillId}
+		and sk.user_phone=#{userPhone}
+	</select>
+
+</mapper>

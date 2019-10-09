@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!--1.配置数据库连接池-->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+		<property name="jdbcUrl" value="jdbc:mysql:///seckill?serverTimezone=Hongkong"/>
+		<property name="user" value="root"/>
+		<property name="password" value="1234"/>
+		<!--私有属性-->
+		<property name="maxPoolSize" value="20"/>
+		<property name="minPoolSize" value="10"/>
+		<property name="initialPoolSize" value="10"/>
+		<property name="autoCommitOnClose" value="false"/>
+		<!--连接不足的空闲等待时间-->
+		<property name="checkoutTimeout" value="10000"/>
+		<!--连接失败后的重连次数-->
+		<property name="acquireRetryAttempts" value="2"/>
+	</bean>
+	<!--2. 配置sqlSessionFactory-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation" value="classpath:mybatis-config.xml"/>
+		<!--扫描domain包-->
+		<property name="typeAliasesPackage" value="com.memoforward.domain"/>
+		<property name="mapperLocations" value="classpath:mapper/*.xml"/>
+	</bean>
+	<!-- 3.配置扫描Dao接口包，动态实现dao接口-->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 1.注入sqlSessionFactory-->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+		<!--2.给出扫描dao接口包-->
+		<property name="basePackage" value="com.memoforward.dao"/>
+	</bean>
+</beans>
